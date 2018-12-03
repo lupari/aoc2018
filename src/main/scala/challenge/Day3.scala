@@ -7,15 +7,15 @@ import scala.util.matching.Regex
 
 object Day3 extends Challenge {
 
-  val pattern: Regex = "#(\\d+) @ (\\d+),(\\d+): (\\d+)x(\\d+)".r
+  val pattern: Regex = ".* @ (\\d+),(\\d+): (\\d+)x(\\d+)".r
 
-  case class Claim(id: Int, x: Int, y: Int, w: Int, h: Int)
+  case class Claim(x: Int, y: Int, w: Int, h: Int)
 
-  case class FabricPatch(x: Int, y: Int, claimId: Int)
+  case class FabricPatch(x: Int, y: Int)
 
   def parse(s: String): Claim = {
-    val pattern(id, x, y, w, h) = s
-    Claim(id.toInt, x.toInt, y.toInt, w.toInt, h.toInt)
+    val pattern(x, y, w, h) = s
+    Claim(x.toInt, y.toInt, w.toInt, h.toInt)
   }
 
   override def run(): Any = {
@@ -24,7 +24,7 @@ object Day3 extends Challenge {
 
     val patches: List[FabricPatch] = claims.flatMap(c => {
       for (i <- c.x until c.x + c.w;
-           j <- c.y until c.y + c.h) yield FabricPatch(i, j, c.id)
+           j <- c.y until c.y + c.h) yield FabricPatch(i, j)
     })
 
     patches.groupBy(p => (p.x, p.y)).count(_._2.length > 1)

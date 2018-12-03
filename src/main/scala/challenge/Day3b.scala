@@ -17,7 +17,7 @@ object Day3b extends Challenge {
     }
   }
 
-  case class FabricPatch(x: Int, y: Int, claimId: Int)
+  case class FabricPatch(x: Int, y: Int)
 
   def parse(s: String): Claim = {
     val pattern(id, x, y, w, h) = s
@@ -29,12 +29,12 @@ object Day3b extends Challenge {
     val claims = input.map(parse)
     val patches: List[FabricPatch] = claims.flatMap(c => {
       for (i <- c.x until c.x + c.w;
-           j <- c.y until c.y + c.h) yield FabricPatch(i, j, c.id)
+           j <- c.y until c.y + c.h) yield FabricPatch(i, j)
     })
     val nonConflicted: Set[(Int, Int)] =
-      patches.groupBy(p => (p.x, p.y)).filter(c => c._2.length == 1).keySet
+      patches.groupBy(p => (p.x, p.y)).filter(_._2.length == 1).keySet
 
-    claims.find(c => c.toSet.subsetOf(nonConflicted)).get.id
+    claims.find(_.toSet.subsetOf(nonConflicted)).get.id
   }
 
 }

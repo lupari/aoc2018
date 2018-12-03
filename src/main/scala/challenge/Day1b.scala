@@ -10,13 +10,13 @@ object Day1b extends Challenge {
 
   def getFirstDuplicate(xs: List[Int]): Int = {
 
-    val seed = xs.scan(0)(_+_).dropRight(1)
+    val seed = xs.scanLeft(0)(_ + _).dropRight(1)
     val inc = xs.sum
 
     @tailrec
     def accumulator(prev: List[Int], acc: mutable.LinkedHashSet[Int]): Int = {
-      val frequencies: List[Int] = prev.map(a => a + inc)
-      frequencies.find(i => acc.contains(i)) match {
+      val frequencies: List[Int] = prev.map(_ + inc)
+      frequencies.find(acc.contains) match {
         case Some(f) => f
         case _ =>
           val next: mutable.LinkedHashSet[Int] = acc + frequencies.last ++ frequencies.dropRight(1)
@@ -28,11 +28,8 @@ object Day1b extends Challenge {
   }
 
   override def run(): Any = {
-    val input: List[Int] = Source.fromResource("day1.txt").getLines().toList.map(i => i.toInt)
+    val input: List[Int] = Source.fromResource("day1.txt").getLines().map(_.toInt).toList
     getFirstDuplicate(input)
   }
 
 }
-
-
-

@@ -10,7 +10,9 @@ object Main extends App {
     "1" -> ((Day1, 472)),
     "1b" -> ((Day1b, 66932)),
     "2" -> ((Day2, 7872)),
-    "2b" -> ((Day2b, "tjxmoewpdkyaihvrndfluwbzc"))
+    "2b" -> ((Day2b, "tjxmoewpdkyaihvrndfluwbzc")),
+    "3" -> ((Day3, 113716)),
+    "3b" -> ((Day3b, 742))
   )
 
   def check(key: String): Unit = {

@@ -17,8 +17,7 @@ object Day1b extends Challenge {
     def accumulator(prev: List[Int], acc: mutable.LinkedHashSet[Int]): Int = {
       val frequencies: List[Int] = prev.map(a => a + inc)
       frequencies.find(i => acc.contains(i)) match {
-        case Some(f) =>
-          f
+        case Some(f) => f
         case _ =>
           val next: mutable.LinkedHashSet[Int] = acc + frequencies.last ++ frequencies.dropRight(1)
           accumulator(frequencies, next)

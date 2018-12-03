@@ -9,6 +9,8 @@ object Main extends App {
   def challenges: Map[String, (Challenge, Any)] = ListMap(
     "1" -> ((Day1, 472)),
     "1b" -> ((Day1b, 66932)),
+    "2" -> ((Day2, 7872)),
+    "2b" -> ((Day2b, "tjxmoewpdkyaihvrndfluwbzc"))
   )
 
   def check(key: String): Unit = {

@@ -10,7 +10,7 @@ object Day1b extends Challenge {
 
   def getFirstDuplicate(xs: List[Int]): Int = {
 
-    val seed = xs.scanLeft(0)(_+_).dropRight(1)
+    val seed = xs.scanLeft(0)(_ + _).dropRight(1)
     val inc = xs.sum
 
     @tailrec
@@ -33,6 +33,3 @@ object Day1b extends Challenge {
   }
 
 }
-
-
-

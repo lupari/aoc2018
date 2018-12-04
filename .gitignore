@@ -2,4 +2,5 @@ target
 .idea
 project/project
 *.sc
+*.log
 .ensime*

@@ -32,7 +32,7 @@ object Day7 extends Challenge {
   }
 
   override def run(): Any = {
-    val input = Source.fromFile("/Users/mlupari/aoc/aoc2018/src/main/resources/day7.txt").getLines.toList
+    val input = Source.fromResource("day7.txt").getLines.toList
     tsort(parseEdges(input), Nil)
   }
 

@@ -19,18 +19,15 @@ object Day10 extends Challenge {
     Point(Location(x.toInt, y.toInt), vx.toInt, vy.toInt)
   }
 
-  def boundingBox(locations: Set[Location]) = {
+  def boundingBox(locations: Set[Location]): (Int, Int, Int, Int) = {
     (locations.minBy(_.x).x, locations.maxBy(_.x).x, locations.minBy(_.y).y, locations.maxBy(_.y).y)
   }
 
-  def bbSize(bb: (Int, Int, Int, Int)) = bb._2 - bb._1 + bb._4 - bb._3 
-
-  def display(t: Int, points: Set[Point]) = {
-    val projection: Set[Location] = points.map(_.locationAt(t)).toSet
-    val (minX, maxX, minY, maxY) = boundingBox(projection)
+  def display(locations: Set[Location]): Any = {
+    val (minX, maxX, minY, maxY) = boundingBox(locations)
     for (y <- minY to maxY) {
       for (x <- minX to maxX) {
-        val found = projection.contains(Location(x, y))
+        val found = locations.contains(Location(x, y))
         print(if (found) '#' else '.')
       }
       println()
@@ -40,9 +37,12 @@ object Day10 extends Challenge {
   override def run(): Any = {
     val input = Source.fromResource("day10.txt").getLines.toList
     val points = input.map(parse).toSet
-    val boxes = (0 to 20000).map(t => (t, boundingBox(points.map(_.locationAt(t)))))
-    val iteration = boxes.minBy(b => bbSize(b._2))
-    display(iteration._1, points)
+    val locations: Seq[Set[Location]] = (0 to 20000).map(t => points.map(_.locationAt(t)))
+    val smallestHeight = locations.minBy(l => {
+      val bb = boundingBox(l)
+      bb._4 - bb._3
+    })
+    display(smallestHeight)
   }
 
 }

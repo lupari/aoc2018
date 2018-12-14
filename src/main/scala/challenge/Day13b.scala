@@ -5,7 +5,7 @@ import base.Challenge
 import scala.annotation.tailrec
 import scala.io.Source
 
-object Day13 extends Challenge {
+object Day13b extends Challenge {
 
   type Grid = Array[Array[Char]]
 
@@ -50,7 +50,7 @@ object Day13 extends Challenge {
       (nextDir, next)
     }
 
-    def move(others: Set[Cart])(implicit grid: Grid): Cart = {
+    def move(others: Set[Cart])(implicit grid: Grid): (Cart, Set[Cart]) =  {
       val (nextDir, junctionTurn): (Char, Char) = track match {
         case '+' =>
           traverseJunction()
@@ -60,27 +60,25 @@ object Day13 extends Challenge {
           (dir, lastTurn)
       }
       val next = nextPos(nextDir)
-      val collided = others.exists(o => o.x == next._1 && o.y == next._2)
-      Cart(next._1, next._2, grid(next._2)(next._1), nextDir, junctionTurn, collided)
+      val collided: Set[Cart] = others.filter(o => o.x == next._1 && o.y == next._2)
+      (Cart(next._1, next._2, grid(next._2)(next._1), nextDir, junctionTurn, collided.nonEmpty), collided)
     }
 
   }
 
   def initialCarts(implicit grid: Grid): List[Cart] = {
-    (
-      for {
-        j <- grid.indices
-        i <- grid.head.indices
-        if "><v^".indexOf(grid(j)(i)) > - 1
-      } yield {
-        grid(j)(i) match {
-          case c if c == '^' | c == 'v' =>
-            Cart(i, j, '|', if (c == 'v') 'D' else 'U')
-          case c if c == '<' | c == '>' =>
-            Cart(i, j, '-', if (c == '<') 'L' else 'R')
-        }
+    (for {
+      j <- grid.indices
+      i <- grid.head.indices
+      if "><v^".indexOf(grid(j)(i)) > - 1
+    } yield {
+      grid(j)(i) match {
+        case c if c == '^' | c == 'v' =>
+          Cart(i, j, '|', if (c == 'v') 'D' else 'U')
+        case c if c == '<' | c == '>' =>
+          Cart(i, j, '-', if (c == '<') 'L' else 'R')
       }
-    ).toList
+    }).toList
   }
 
   def moveCarts(carts: List[Cart])(implicit grid: Grid): List[Cart] = {
@@ -88,31 +86,31 @@ object Day13 extends Challenge {
     def helper(xs: List[Cart], others: Set[Cart], acc: List[Cart]): List[Cart] = xs match {
       case h :: t =>
         grid(h.y)(h.x) = h.track
-        val moved = h.move(others - h)(grid)
-        helper(t, others - h + moved, acc :+ moved)
+        val (moved, collided) = h.move(others - h)
+        if (collided.isEmpty) {
+          helper(t, others - h + moved, acc :+ moved)
+        } else {
+          helper(t.filterNot(collided.contains), others - h -- collided, acc.filterNot(collided.contains))
+        }
       case _ => acc
     }
     val sorted = carts.sortBy(c => (c.x, c.y))
     helper(sorted, Set() ++ sorted, Nil)
   }
 
-  def colliding(carts: List[Cart]): Boolean = carts.exists(_.collided == true)
-
   override def run(): Any = {
     val lines: List[String] = Source.fromResource("day13.txt").getLines.toList
     val width = lines.maxBy(_.length).length
     val input = lines.map(l => l + " " * (width - l.length))
     implicit val grid: Grid = Array.ofDim[Char](input.length, width)
-
     for {i <- 0 until width; j <- input.indices} yield {
       grid(j)(i) = input(j)(i)
     }
 
-    val collision: List[Cart] =
-      Iterator.iterate(initialCarts)(carts => moveCarts(carts)).dropWhile(carts => !colliding(carts)).next
+    val lastStanding: Cart =
+      Iterator.iterate(initialCarts)(carts => moveCarts(carts)).dropWhile(_.length > 1).next.head
 
-    val collided = collision.filter(_.collided).minBy(c => (c.x, c.y))
-    (collided.x, collided.y)
+    (lastStanding.x, lastStanding.y)
   }
 
 }
